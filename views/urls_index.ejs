@@ -16,8 +16,7 @@
     <h3>My URLs</h3>
     <table class="table">
       <thead>
-        <tr>
-          <a href='#'> create a new link </a>
+        <tr>          
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
         </tr>
@@ -25,7 +24,6 @@
       <tbody>
         <% for(let url in urls) { %>
         <tr>
-          <!-- = means get the values, don't execute. also % inside tags means JavaScript -->
           <td><%= url %></td>
           <td><%= urls[url] %></td>
         </tr>
