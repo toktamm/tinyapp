@@ -77,5 +77,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect("/urls");
 });
 
-
+app.post("/login", (req, res) => {
+  let usernameValue = req.body.username;
+  res.cookie("username", usernameValue);
+  res.redirect("/urls");
+})
 
