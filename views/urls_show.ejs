@@ -9,17 +9,20 @@
 </head>
 
 <body>
+  <%- include('partials/_header') %>
   <div class="card text-center">
     <div class="card-header"></div>
     <div class="card-body">
       <h5 class="card-title">TinyURL for: <a href="<%= longURL %>"><%= longURL %></a></h5>
       <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+    </div>
+    <div class="card-footer text-muted">
       <form method="POST" action="/urls/<%= shortURL %>/edit">
         <label for="longURL">Edit:</label><br>
-        <input type="text" id="longURL" name="longURL" value="<%= longURL %>"><br><br>
+        <label for="longURL">New URL:</label>
+        <input type="text" id="longURL" name="longURL" value="<%= longURL %>"placeholder="http://" style="width: 300px; margin: 1em"><br>
         <button type="submit" class="btn btn-primary">Submit</button></form>
     </div>
-    <div class="card-footer text-muted"></div>
   </div>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
