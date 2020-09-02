@@ -64,8 +64,6 @@ function generateRandomString() {
   return randomString;
 };
 
-// const userId = generateRandomString();
-
 app.post("/urls/:shortURL/delete",(req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
