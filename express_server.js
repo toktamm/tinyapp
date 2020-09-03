@@ -19,10 +19,6 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -32,7 +28,10 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies.username
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -40,7 +39,7 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   console.log(req.body);  // Log the POST request body to the console
   urlDatabase[shortURL] = req.body.longURL;
-  console.log(urlDatabase);
+  // console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);         // Respond with 'Ok' (we will replace this)
 });
 
@@ -50,11 +49,18 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies.username
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -78,8 +84,18 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  let usernameValue = req.body.username;
-  res.cookie("username", usernameValue);
+  res.cookie("username", `${req.body.username}`);
   res.redirect("/urls");
-})
+});
 
+app.post("/logout", (req, res) => {
+  res.clearCookie("username", `${req.body.username}`);
+  res.redirect("/urls");
+});
+
+
+
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
