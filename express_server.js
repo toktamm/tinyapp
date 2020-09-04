@@ -33,7 +33,7 @@ const emailValidation = function(users, email) {
   for (user_id in users) {
   // console.log(users[user_id].email);
   if (users[user_id].email === email) {
-    return true;
+    return user_id;
   }
 }
 return false;
@@ -55,16 +55,18 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
 
-  const user_id = req.cookies.user_id;
+const user_id = req.cookies.user_id;
+
+// console.log(user_id);
 
   if (!user_id) {
     res.redirect("/register");
   }
-
   const templateVars = {
     urls: urlDatabase,
     user: users[user_id]
   };
+  // console.log(templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -126,12 +128,23 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", `${req.body.username}`);
+  
+  const user_id = emailValidation(users, req.body.email)
+  
+  if (!user_id) {
+    return res.sendStatus(403);
+  };
+
+  if (users[user_id].password !== req.body.password) {
+    return res.sendStatus(403);
+  };
+
+  res.cookie("user_id", `${user_id}`);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username", `${req.body.username}`);
+  res.clearCookie("user_id");  // res.clearcookie("user_id", `${req.body.user_id}`)
   res.redirect("/urls");
 });
 
@@ -161,10 +174,6 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 }
 });
-
-
-
-
 
 
 
