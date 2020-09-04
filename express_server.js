@@ -16,17 +16,30 @@ const urlDatabase = {
 };
 
 const users = {
-  "uy68uj": {
-    id: "uy68uj",
+  "userRandomID": {
+    id: "userRandomID",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
-  "h6jn8k": {
-    id: "h6jn8k",
+  "user2RandomID": {
+    id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
 };
+
+
+const emailValidation = function(users, email) {
+  for (user_id in users) {
+  // console.log(users[user_id].email);
+  if (users[user_id].email === email) {
+    return true;
+  }
+}
+return false;
+};
+
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -127,6 +140,11 @@ app.post("/register", (req, res) => {
   const userId = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  if (email === '' || password === '') {
+  res.sendStatus(400);
+} else if (emailValidation(users, email)) {
+  res.sendStatus(400);
+} else {
   users[userId] = {
     id: userId,
     email,
@@ -134,6 +152,7 @@ app.post("/register", (req, res) => {
   };
   res.cookie("user_id", userId);
   res.redirect("/urls");
+}
 });
 
 
