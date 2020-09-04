@@ -16,13 +16,13 @@ const urlDatabase = {
 };
 
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
+  "uy68uj": {
+    id: "uy68uj",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
-  "user2RandomID": {
-    id: "user2RandomID",
+  "h6jn8k": {
+    id: "h6jn8k",
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
@@ -43,7 +43,7 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
 
   const user_id = req.cookies.user_id;
-  
+
   if (!user_id) {
     res.redirect("/register");
   }
@@ -125,16 +125,17 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const userId = generateRandomString();
-  const emailId = req.body.email;
-  const passwordId = req.body.password;
+  const email = req.body.email;
+  const password = req.body.password;
   users[userId] = {
     id: userId,
-    email: emailId,
-    password: passwordId
+    email,
+    password
   };
   res.cookie("user_id", userId);
   res.redirect("/urls");
 });
+
 
 
 
