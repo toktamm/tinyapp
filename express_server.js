@@ -18,8 +18,19 @@ app.use(cookieParser());
 
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
 };
+
+const urlsForUser = function(userID) {
+  let obj = {};
+  for (key in urlDatabase) {
+    if (userID === urlDatabase[key].userID) {
+      obj[key] = urlDatabase[key];
+    }
+  }
+  return obj;
+};
+
 
 const users = {
   "userRandomID": {
@@ -45,6 +56,7 @@ const emailValidation = function (users, email) {
   return false;
 };
 
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -67,7 +79,7 @@ app.get("/urls", (req, res) => {
     res.redirect("/register");
   }
   const templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(user_id),
     user: users[user_id]
   };
   // console.log(templateVars);
@@ -77,7 +89,7 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   console.log(req.body);  // Log the POST request body to the console
-  urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.cookies["user_id"]};
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.cookies["user_id"] };
   // console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);         // Respond with 'Ok' (we will replace this)
 });
