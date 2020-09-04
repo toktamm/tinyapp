@@ -29,17 +29,15 @@ const users = {
 };
 
 
-const emailValidation = function(users, email) {
+const emailValidation = function (users, email) {
   for (user_id in users) {
-  // console.log(users[user_id].email);
-  if (users[user_id].email === email) {
-    return user_id;
+    // console.log(users[user_id].email);
+    if (users[user_id].email === email) {
+      return user_id;
+    }
   }
-}
-return false;
+  return false;
 };
-
-
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -55,9 +53,9 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
 
-const user_id = req.cookies.user_id;
+  const user_id = req.cookies.user_id;
 
-// console.log(user_id);
+  // console.log(user_id);
 
   if (!user_id) {
     res.redirect("/register");
@@ -87,7 +85,11 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]]
   };
-  res.render("urls_new", templateVars);
+  if (!req.cookies["user_id"]) {
+    res.redirect('/login')
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -126,9 +128,9 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  
+
   const user_id = emailValidation(users, req.body.email)
-  
+
   if (!user_id) {
     return res.sendStatus(403);
   };
@@ -158,18 +160,18 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   if (email === '' || password === '') {
-  res.sendStatus(400);
-} else if (emailValidation(users, email)) {
-  res.sendStatus(400);
-} else {
-  users[userId] = {
-    id: userId,
-    email,
-    password
-  };
-  res.cookie("user_id", userId);
-  res.redirect("/urls");
-}
+    res.sendStatus(400);
+  } else if (emailValidation(users, email)) {
+    res.sendStatus(400);
+  } else {
+    users[userId] = {
+      id: userId,
+      email,
+      password
+    };
+    res.cookie("user_id", userId);
+    res.redirect("/urls");
+  }
 });
 
 
