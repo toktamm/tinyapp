@@ -21,7 +21,7 @@ const urlDatabase = {
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
 };
 
-const urlsForUser = function(userID) {
+const urlsForUser = function (userID) {
   let obj = {};
   for (key in urlDatabase) {
     if (userID === urlDatabase[key].userID) {
@@ -77,13 +77,14 @@ app.get("/urls", (req, res) => {
 
   if (!user_id) {
     res.redirect("/register");
+  } else {
+    const templateVars = {
+      urls: urlsForUser(user_id),
+      user: users[user_id]
+    };
+    // console.log(templateVars);
+    res.render("urls_index", templateVars);
   }
-  const templateVars = {
-    urls: urlsForUser(user_id),
-    user: users[user_id]
-  };
-  // console.log(templateVars);
-  res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -129,14 +130,22 @@ function generateRandomString() {
 };
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  if (req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  } else {
+    res.sendStatus(403);
+  };
 });
 
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
-  res.redirect("/urls");
+  if (req.cookies.user_id === urlDatabase[req.params.shortURL].userID) {
+    urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+    res.redirect("/urls");
+  } else {
+    res.sendStatus(403);
+  }
 });
 
 app.get("/login", (req, res) => {
