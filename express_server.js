@@ -10,6 +10,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
+const bcrypt = require('bcrypt');
+
 //old version of urlDatabase
 // const urlDatabase = {
 //   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -36,14 +38,27 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    // password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    // password: "dishwasher-funk"
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 };
+
+
+const findUserByEmail = function (email) {
+  for (user_id in users) {
+    // console.log(users[user_id].email);
+    if (users[user_id].email === email) {
+      return users[user_id];
+    }
+  }
+};
+
 
 
 const emailValidation = function (users, email) {
@@ -163,12 +178,16 @@ app.post("/login", (req, res) => {
     return res.sendStatus(403);
   };
 
-  if (users[user_id].password !== req.body.password) {
+  const user = findUserByEmail(req.body.email);
+
+  // if (users[user_id].password !== req.body.Password)
+  if (bcrypt.compareSync(req.body.password, user.password)) {
+    res.cookie("user_id", `${user_id}`);
+    res.redirect("/urls");
+  } else {
     return res.sendStatus(403);
   };
 
-  res.cookie("user_id", `${user_id}`);
-  res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
@@ -195,7 +214,7 @@ app.post("/register", (req, res) => {
     users[userId] = {
       id: userId,
       email,
-      password
+      password: bcrypt.hashSync(password, 10)
     };
     res.cookie("user_id", userId);
     res.redirect("/urls");
