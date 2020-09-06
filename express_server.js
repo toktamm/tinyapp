@@ -57,18 +57,17 @@ const users = {
 };
 
 
-const findUserByEmail = function (email) {
-  for (user_id in users) {
-    // console.log(users[user_id].email);
-    if (users[user_id].email === email) {
-      return users[user_id];
-    }
+function generateRandomString() {
+  let randomString = "";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  for (let i = 0; i < 6; i++) {
+    randomString += characters.charAt(Math.floor(Math.random() * (characters.length)));
   }
+  return randomString;
 };
 
 
-
-const emailValidation = function (users, email) {
+const findUserByEmail = function (users, email) {
   for (user_id in users) {
     // console.log(users[user_id].email);
     if (users[user_id].email === email) {
@@ -142,15 +141,6 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-function generateRandomString() {
-  let randomString = "";
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  for (let i = 0; i < 6; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * (characters.length)));
-  }
-  return randomString;
-};
-
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
@@ -159,7 +149,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.sendStatus(403);
   };
 });
-
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
@@ -179,13 +168,13 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
 
-  const user_id = emailValidation(users, req.body.email)
+  const user_id = findUserByEmail(users, req.body.email)
 
   if (!user_id) {
     return res.sendStatus(403);
   };
 
-  const user = findUserByEmail(req.body.email);
+  const user = users[findUserByEmail(users, req.body.email)];
 
   // if (users[user_id].password !== req.body.Password)
   if (bcrypt.compareSync(req.body.password, user.password)) {
@@ -194,7 +183,6 @@ app.post("/login", (req, res) => {
   } else {
     return res.sendStatus(403);
   };
-
 });
 
 app.post("/logout", (req, res) => {
@@ -216,7 +204,7 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   if (email === '' || password === '') {
     res.sendStatus(400);
-  } else if (emailValidation(users, email)) {
+  } else if (findUserByEmail(users, email)) {
     res.sendStatus(400);
   } else {
     users[userId] = {
