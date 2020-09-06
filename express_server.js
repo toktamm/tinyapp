@@ -1,22 +1,31 @@
 const express = require("express");
 const app = express();
+
 const PORT = 8080; // default port 8080
 
-app.set("view engine", "ejs");
-
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// const cookieParser = require('cookie-parser');
-// app.use(cookieParser());
+const { generateRandomString, findUserByEmail, urlsForUser} = require('./helpers')
 
 const bcrypt = require('bcrypt');
+
+const bodyParser = require("body-parser");
+
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const cookieSession = require('cookie-session')
 app.use(cookieSession({
   name: 'session',
   keys: ["key1", "key2"],
 }));
+
+app.set("view engine", "ejs");
+
+// const cookieParser = require('cookie-parser');
+// app.use(cookieParser());
+
+
+
+
 
 
 //old version of urlDatabase
@@ -25,20 +34,12 @@ app.use(cookieSession({
 //   "9sm5xK": "http://www.google.com"
 // };
 
+
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
 };
 
-const urlsForUser = function (userID) {
-  let obj = {};
-  for (key in urlDatabase) {
-    if (userID === urlDatabase[key].userID) {
-      obj[key] = urlDatabase[key];
-    }
-  }
-  return obj;
-};
 
 
 const users = {
@@ -57,25 +58,7 @@ const users = {
 };
 
 
-function generateRandomString() {
-  let randomString = "";
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  for (let i = 0; i < 6; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * (characters.length)));
-  }
-  return randomString;
-};
 
-
-const findUserByEmail = function (users, email) {
-  for (user_id in users) {
-    // console.log(users[user_id].email);
-    if (users[user_id].email === email) {
-      return user_id;
-    }
-  }
-  return false;
-};
 
 
 app.get("/", (req, res) => {
@@ -100,7 +83,7 @@ app.get("/urls", (req, res) => {
     res.redirect("/register");
   } else {
     const templateVars = {
-      urls: urlsForUser(user_id),
+      urls: urlsForUser(user_id, urlDatabase),
       user: users[user_id]
     };
     // console.log(templateVars);
@@ -176,7 +159,7 @@ app.post("/login", (req, res) => {
 
   const user = users[findUserByEmail(users, req.body.email)];
 
-  // if (users[user_id].password !== req.body.Password)
+  //before bcrypt: if (users[user_id].password !== req.body.Password)
   if (bcrypt.compareSync(req.body.password, user.password)) {
     req.session.user_id = `${user_id}`;
     res.redirect("/urls");
