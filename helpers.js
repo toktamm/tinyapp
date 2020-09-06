@@ -16,7 +16,7 @@ const findUserByEmail = function(users, email) {
       return user_id;
     }
   }
-  return false;
+  return undefined;
 };
 
 
