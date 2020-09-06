@@ -19,7 +19,6 @@ describe('findUserByEmail', function() {
   it('should return a user with valid email', function() {
     const user = findUserByEmail(testUsers, "user@example.com")
     const expectedOutput = "userRandomID";
-    // Write your assert statement here
     assert.strictEqual(user, expectedOutput);
   });
 
