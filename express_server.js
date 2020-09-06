@@ -80,7 +80,7 @@ app.get("/urls", (req, res) => {
   // console.log(user_id);
 
   if (!user_id) {
-    res.redirect("/register");
+    res.redirect("/login");
   } else {
     const templateVars = {
       urls: urlsForUser(user_id, urlDatabase),
