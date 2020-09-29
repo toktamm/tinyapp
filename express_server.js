@@ -9,7 +9,6 @@ const bcrypt = require('bcrypt');
 
 const bodyParser = require("body-parser");
 
-
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const cookieSession = require('cookie-session')
@@ -20,15 +19,10 @@ app.use(cookieSession({
 
 app.set("view engine", "ejs");
 
-
-
-
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
 };
-
-
 
 const users = {
   "userRandomID": {
@@ -43,10 +37,6 @@ const users = {
   }
 };
 
-
-
-
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -60,9 +50,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-
   const user_id = req.session.user_id;
-
   if (!user_id) {
     res.redirect("/login");
   } else {
@@ -70,7 +58,6 @@ app.get("/urls", (req, res) => {
       urls: urlsForUser(user_id, urlDatabase),
       user: users[user_id]
     };
-
     res.render("urls_index", templateVars);
   }
 });
@@ -132,15 +119,11 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-
   const user_id = findUserByEmail(users, req.body.email)
-
   if (!user_id) {
     return res.sendStatus(403);
   };
-
   const user = users[findUserByEmail(users, req.body.email)];
-
   if (bcrypt.compareSync(req.body.password, user.password)) {
     req.session.user_id = `${user_id}`;
     res.redirect("/urls");
@@ -179,7 +162,6 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
