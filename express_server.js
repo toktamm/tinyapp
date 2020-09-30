@@ -1,22 +1,16 @@
 const express = require("express");
 const app = express();
-
 const PORT = 8080; // default port 8080
-
-const { generateRandomString, findUserByEmail, urlsForUser} = require('./helpers')
-
+const { generateRandomString, findUserByEmail, urlsForUser } = require('./helpers')
 const bcrypt = require('bcrypt');
-
 const bodyParser = require("body-parser");
+const cookieSession = require('cookie-session')
 
 app.use(bodyParser.urlencoded({ extended: true }));
-
-const cookieSession = require('cookie-session')
 app.use(cookieSession({
   name: 'session',
   keys: ["key1", "key2"],
 }));
-
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -113,14 +107,14 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const user_id = findUserByEmail(users, req.body.email)
   if (!user_id) {
-    return res.sendStatus(403);
+    return res.status(403).send("User doesn't exist!");
   };
   const user = users[findUserByEmail(users, req.body.email)];
   if (bcrypt.compareSync(req.body.password, user.password)) {
     req.session.user_id = `${user_id}`;
     res.redirect("/urls");
   } else {
-    return res.sendStatus(403);
+    return res.status(403).send("Please provide a valid password!");
   };
 });
 
@@ -141,9 +135,9 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   if (email === '' || password === '') {
-    res.sendStatus(400);
+    res.status(400).send("Please provide a valid email and/or password.");
   } else if (findUserByEmail(users, email)) {
-    res.sendStatus(400);
+    res.status(400).send("User already exists!");
   } else {
     users[userId] = {
       id: userId,
