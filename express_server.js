@@ -31,7 +31,7 @@ const users = {
   }
 };
 
-
+// root redirect
 app.get("/", (req, res) => {
   const user_id = req.session.user_id;
   if (user_id) {
@@ -41,6 +41,7 @@ app.get("/", (req, res) => {
   }
 });
 
+// all the existing urls
 app.get("/urls", (req, res) => {
   const user_id = req.session.user_id;
   if (!user_id) {
@@ -54,17 +55,20 @@ app.get("/urls", (req, res) => {
   }
 });
 
+// create new urls
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.session.user_id };
   res.redirect(`/urls/${shortURL}`);
 });
 
+// redirect existing short url to the corresponding long url
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]["longURL"];
   res.redirect(longURL);
 });
 
+// add new url
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     user: users[req.session.user_id]
@@ -76,6 +80,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// edit short urls pre attempt
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -85,6 +90,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// delete urls for existing logged-in users
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
@@ -94,6 +100,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   };
 });
 
+// edit short urls for existing logged-in users post attempt
 app.post("/urls/:shortURL/edit", (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     urlDatabase[req.params.shortURL].longURL = req.body.longURL;
@@ -103,6 +110,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   }
 });
 
+// login page pre login attempt
 app.get("/login", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id]
@@ -110,6 +118,7 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
+// login page post login attempt
 app.post("/login", (req, res) => {
   const user_id = findUserByEmail(users, req.body.email)
   if (!user_id) {
@@ -124,11 +133,13 @@ app.post("/login", (req, res) => {
   };
 });
 
+// logout page
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
 
+// register page pre registeration attempt
 app.get("/register", (req, res) => {
   let templateVars = {
     user: users[req.session.user_id],
@@ -136,6 +147,7 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+// register page post registeration attempt
 app.post("/register", (req, res) => {
   const userId = generateRandomString();
   const email = req.body.email;
