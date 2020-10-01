@@ -31,8 +31,14 @@ const users = {
   }
 };
 
+
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const user_id = req.session.user_id;
+  if (user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls", (req, res) => {
@@ -64,7 +70,7 @@ app.get("/urls/new", (req, res) => {
     user: users[req.session.user_id]
   };
   if (!req.session.user_id) {
-    res.redirect('/login')
+    res.redirect("/login");
   } else {
     res.render("urls_new", templateVars);
   }
