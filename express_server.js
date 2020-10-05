@@ -74,7 +74,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 // add new url
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
+  const templateVars = {
     user: users[req.session.user_id]
   };
   if (!req.session.user_id) {
@@ -86,7 +86,7 @@ app.get("/urls/new", (req, res) => {
 
 // edit short urls pre attempt
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = {
+  const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.session.user_id]
@@ -145,7 +145,7 @@ app.post("/logout", (req, res) => {
 
 // register page pre registeration attempt
 app.get("/register", (req, res) => {
-  let templateVars = {
+  const templateVars = {
     user: users[req.session.user_id],
   };
   res.render("register", templateVars);
