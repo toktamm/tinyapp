@@ -17,7 +17,7 @@ const findUserByEmail = function(users, email) {
   }
   // By default JavaScript functions return undefined unless specified otherwise.
   //it's better to return null or false if you want to explicitly return no value/a falsey value
-  return null;
+  return false;
 };
 
 

@@ -65,7 +65,11 @@ app.post("/urls", (req, res) => {
 // redirect existing short url to the corresponding long url
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]["longURL"];
-  res.redirect(longURL);
+  if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
+    res.redirect(longURL);
+  } else {
+    return res.status(403).send("Access denied!");
+  }
 });
 
 // add new url
